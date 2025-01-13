@@ -16,7 +16,7 @@ namespace CampusCourses.Controllers
             _service = service;
         }
 
-        [HttpPost("registration")]
+        [HttpPost("/registration")]
         public async Task<IActionResult> registerNewUser([FromBody] UserRegisterModel userRegisterModel)
         {
             string tokenAutorize = await _service.registerUser(userRegisterModel);
@@ -24,7 +24,7 @@ namespace CampusCourses.Controllers
             return Ok(new { token = tokenAutorize });
         }
 
-        [HttpPost("login")]
+        [HttpPost("/login")]
         public async Task<IActionResult> autorizeUser([FromBody] UserLoginModel userLoginModel)
         {
             string tokenAutorize = await _service.autorizeUser(userLoginModel);
@@ -32,7 +32,7 @@ namespace CampusCourses.Controllers
             return Ok(new { token = tokenAutorize });
         }
 
-        [HttpPost("logout")]
+        [HttpPost("/logout")]
         [Authorize]
         public async Task<IActionResult> logoutUser()
         {
@@ -54,7 +54,7 @@ namespace CampusCourses.Controllers
             throw new UnauthorizedException("Пользователь не авторизован");
         }
 
-        [HttpGet("profile")]
+        [HttpGet("/profile")]
         [Authorize]
         public async Task<ActionResult<UserProfileModel>> getProfile()
         {
@@ -73,7 +73,7 @@ namespace CampusCourses.Controllers
             throw new UnauthorizedException("Пользователь не авторизован");
         }
 
-        [HttpPut("profile")]
+        [HttpPut("/profile")]
         [Authorize]
         public async Task<ActionResult<UserProfileModel>> eitUserProfile([FromBody] EditUserProfileModel editUserProfileModel)
         {

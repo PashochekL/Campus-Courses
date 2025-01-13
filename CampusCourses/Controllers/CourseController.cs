@@ -16,7 +16,61 @@ namespace CampusCourses.Controllers
             _service = service;
         }
 
-        [HttpPost("groups/{groupId}")]
+        [HttpGet("/courses/{id}/details")]
+        [Authorize]
+        public async Task<IActionResult> getCampusCourseDetails(Guid id)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim != null)
+            {
+                if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    CampusCourseDetailsModel campusCourseDetailsModel = await _service.getCampusDetails(id, userId);
+
+                    return Ok(new { campusCourseDetailsModel });
+                }
+            }
+            throw new UnauthorizedException("Пользователь не авторизован");
+        }
+
+        /*[HttpPost("/courses/{id}/sign-up")]
+        [Authorize]
+        public async Task<IActionResult> signUpCourse(Guid id)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim != null)
+            {
+                if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    await _service.signUpCampusCourse(id, userId);
+
+                    return Ok();
+                }
+            }
+            throw new UnauthorizedException("Пользователь не авторизован");
+        }*/
+
+        [HttpPost("/courses/{id}/notifications")]
+        [Authorize]
+        public async Task<IActionResult> createCampusNotification(Guid id, [FromBody] AddCampusCourseNotificationModel createNotification)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim != null)
+            {
+                if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    CampusCourseDetailsModel campusCourseDetailsModel = await _service.createNotification(id, createNotification, userId);
+
+                    return Ok(new { campusCourseDetailsModel });
+                }
+            }
+            throw new UnauthorizedException("Пользователь не авторизован");
+        }
+
+        [HttpPost("/groups/{groupId}")]
         [Authorize]
         public async Task<IActionResult> createCampusGroup(Guid groupId, [FromBody] CreateCampusCourseModel createCampusCourseModel)
         {

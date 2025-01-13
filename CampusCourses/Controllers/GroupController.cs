@@ -1,4 +1,5 @@
 ﻿using CampusCourses.Data.DTO.Account;
+using CampusCourses.Data.DTO.Course;
 using CampusCourses.Data.DTO.Group;
 using CampusCourses.Services.Exceptions;
 using CampusCourses.Services.IServices;
@@ -16,7 +17,7 @@ namespace CampusCourses.Controllers
             _service = service;
         }
 
-        [HttpGet("groups")]
+        [HttpGet("/groups")]
         [Authorize]
         public async Task<ActionResult<CampusGroupModel>> getListCampusGroups()
         {
@@ -34,7 +35,7 @@ namespace CampusCourses.Controllers
             throw new UnauthorizedException("Пользователь не авторизован");
         }
 
-        [HttpPost("groups")]
+        [HttpPost("/groups")]
         [Authorize]
         public async Task<IActionResult> createCampusGroup([FromBody] CreateCampusGroupModel createCampusGroupModel)
         {
@@ -52,7 +53,7 @@ namespace CampusCourses.Controllers
             throw new UnauthorizedException("Пользователь не авторизован");
         }
 
-        [HttpPut("groups/{id}")]
+        [HttpPut("/groups/{id}")]
         [Authorize]
         public async Task<IActionResult> editNameCampusGroup(Guid id, [FromBody] CreateCampusGroupModel createCampusGroupModel)
         {
@@ -65,6 +66,24 @@ namespace CampusCourses.Controllers
                     CampusGroupModel campusGroupModel = await _service.editCampusGroup(id, createCampusGroupModel, userId);
 
                     return Ok(new { campusGroupModel });
+                }
+            }
+            throw new UnauthorizedException("Пользователь не авторизован");
+        }
+
+        [HttpGet("/groups/{id}")]
+        [Authorize]
+        public async Task<ActionResult<CampusCoursePreviewModel>> getListCampusGroups(Guid id)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim != null)
+            {
+                if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    List<CampusCoursePreviewModel> campusCoursePreviewModel = await _service.getCampusGroups(id, userId);
+
+                    return Ok(new { campusCoursePreviewModel });
                 }
             }
             throw new UnauthorizedException("Пользователь не авторизован");

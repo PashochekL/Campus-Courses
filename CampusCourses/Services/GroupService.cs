@@ -1,4 +1,5 @@
 ﻿using CampusCourses.Data;
+using CampusCourses.Data.DTO.Course;
 using CampusCourses.Data.DTO.Group;
 using CampusCourses.Data.Entities;
 using CampusCourses.Services.Exceptions;
@@ -24,7 +25,7 @@ namespace CampusCourses.Services
             if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
 
             var groups = await _dbContext.Groups.OrderBy(gr => gr.Name)
-                .Select(group => new CampusGroupModel
+                .Select(group => new CampusGroupModel()
                 {
                     id = group.Id,
                     name = group.Name
@@ -84,6 +85,30 @@ namespace CampusCourses.Services
                 id = group.Id
             };
             return campusGroupModel;
+        }
+
+        public async Task<List<CampusCoursePreviewModel>> getCampusGroups(Guid id, Guid userId)
+        {
+            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
+
+            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
+
+            var group = await _dbContext.Groups.Include(group => group.Courses).FirstOrDefaultAsync(gr => gr.Id == id);
+
+            if (group == null) throw new NotFoundException("Группы не существует");
+
+            var courses = group.Courses.OrderBy(c => c.Name).Select(course => new CampusCoursePreviewModel()
+            {
+                id = group.Id,
+                name = group.Name,
+                semester = course.Semester,
+                startYear = course.StartYear,
+                maximumStudentsCount = course.MaximumStudentsCount,
+                remainingSlotsCount = course.RemainingSlotsCount,
+                status = course.Status
+            }).ToList();
+
+            return courses;
         }
     }
 }

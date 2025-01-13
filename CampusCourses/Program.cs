@@ -35,10 +35,13 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 builder.Services.AddScoped<IConnectionMultiplexer>(provider => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")));
 
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<HelperService>();
 builder.Services.AddScoped<TokenBlacklistService>();
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IGroupService, GroupService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<StartDataService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

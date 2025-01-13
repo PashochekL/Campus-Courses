@@ -2,12 +2,15 @@
 
 namespace CampusCourses.Data.Entities
 {
-    public class Group
+    public class Notification
     {
         [Key]
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Text { get; set; }
+        public bool IsImportant { get; set; }
         public DateTime CreatedDate { get; set; }
-        public ICollection<Course> Courses { get; set; } = new List<Course>();
+
+        public Guid CourseId { get; set; }
+        public Course Course { get; set; }
     }
 }

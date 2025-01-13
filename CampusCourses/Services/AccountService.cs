@@ -54,7 +54,7 @@ namespace CampusCourses.Services
                 throw new BadRequestException("Пароль должен быть не менее 6 символов и содержать хотя бы одну цифру");
             }
 
-            var newAccount = new Account
+            var newAccount = new Account()
             {
                 FullName = userRegisterModel.fullName,
                 Password = await _passwordService.HashPassword(userRegisterModel.password),

@@ -18,5 +18,8 @@ namespace CampusCourses.Data.Entities
         public Guid GroupId { get; set; }
         public Group Group { get; set; }
         public DateTime CreatedDate { get; set; }
+        public ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
+        public ICollection<Student> Students { get; set; } = new List<Student>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

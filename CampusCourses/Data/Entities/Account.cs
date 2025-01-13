@@ -15,7 +15,7 @@ namespace CampusCourses.Data.Entities
         public bool isStudent { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        //public ICollection<Student> MyCourses { get; set; } = new List<Student>();
-        //public ICollection<Teacher> TeachingCourses { get; set; } = new List<Teacher>();
+        public ICollection<Student> MyCourses { get; set; } = new List<Student>();
+        public ICollection<Teacher> TeachingCourses { get; set; } = new List<Teacher>();
     }
 }
