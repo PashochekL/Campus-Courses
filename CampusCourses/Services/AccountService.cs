@@ -16,13 +16,16 @@ namespace CampusCourses.Services
         private readonly PasswordService _passwordService;
         private readonly TokenService _tokenService;
         private readonly TokenBlacklistService _tokenBlacklistService;
+        private readonly HelperService _helperService;
 
-        public AccountService(AppDBContext dbContext, PasswordService passwordService, TokenService tokenService, TokenBlacklistService tokenBlacklistService)
+        public AccountService(AppDBContext dbContext, PasswordService passwordService, TokenService tokenService, 
+            TokenBlacklistService tokenBlacklistService, HelperService helperService)
         {
             _dbContext = dbContext;
             _passwordService = passwordService;
             _tokenService = tokenService;
             _tokenBlacklistService = tokenBlacklistService;
+            _helperService = helperService;
         }
 
         public async Task<string> registerUser(UserRegisterModel userRegisterModel)
@@ -33,8 +36,7 @@ namespace CampusCourses.Services
 
             if (repeatEmail != null) throw new BadRequestException("Данный email уже используется");
 
-            if (userRegisterModel.password != userRegisterModel.confirmPassword)
-                throw new BadRequestException("Пароли должны быть одинаковыми");
+            if (userRegisterModel.password != userRegisterModel.confirmPassword) throw new BadRequestException("Пароли должны быть одинаковыми");
 
             if (string.IsNullOrWhiteSpace(userRegisterModel.email) || !Regex.IsMatch(userRegisterModel.email, emailRegex))
             {
@@ -85,9 +87,7 @@ namespace CampusCourses.Services
 
         public async Task userLogout(Guid userId, string token)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
+            var account = await _helperService.checkAutorize(userId);
 
             TimeSpan expiration = TimeSpan.FromDays(1);
 
@@ -96,7 +96,7 @@ namespace CampusCourses.Services
 
         public async Task<UserProfileModel> getUserProfile(Guid userId)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
+            var account = await _helperService.checkAutorize(userId);
 
             UserProfileModel userProfileModel = new UserProfileModel()
             { 
@@ -109,9 +109,7 @@ namespace CampusCourses.Services
 
         public async Task<UserProfileModel> editProfile(Guid userId, EditUserProfileModel editUserProfileModel)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
+            var account = await _helperService.checkAutorize(userId);
 
             var birthDate = editUserProfileModel.birthDate.Date;
             var today = DateTime.Today;

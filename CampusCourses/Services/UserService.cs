@@ -12,10 +12,12 @@ namespace CampusCourses.Services
     public class UserService : IUserService
     {
         private readonly AppDBContext _dbContext;
+        private readonly HelperService _helperService;
 
-        public UserService(AppDBContext dbContext)
+        public UserService(AppDBContext dbContext, HelperService helperService)
         {
             _dbContext = dbContext;
+            _helperService = helperService;
         }
 
         public async Task<List<UserShortModel>> getListAllUser(Guid userId)
@@ -39,9 +41,7 @@ namespace CampusCourses.Services
 
         public async Task<UserRolesModel> getUserRoles(Guid userId)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
+            var account = await _helperService.checkAutorize(userId);
 
             var roles = new UserRolesModel
             {

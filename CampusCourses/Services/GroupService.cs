@@ -12,17 +12,17 @@ namespace CampusCourses.Services
     public class GroupService : IGroupService
     {
         private readonly AppDBContext _dbContext;
+        private readonly HelperService _helperService;
 
-        public GroupService(AppDBContext dbContext)
+        public GroupService(AppDBContext dbContext, HelperService helperService)
         {
             _dbContext = dbContext;
+            _helperService = helperService;
         }
 
         public async Task<List<CampusGroupModel>> getListAllGroups(Guid userId)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
+            var account = await _helperService.checkAutorize(userId);
 
             var groups = await _dbContext.Groups.OrderBy(gr => gr.Name)
                 .Select(group => new CampusGroupModel()
@@ -40,9 +40,7 @@ namespace CampusCourses.Services
 
         public async Task<CampusGroupModel> createGroup(CreateCampusGroupModel createCampusGroupModel, Guid userId)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
+            var account = await _helperService.checkAutorize(userId);
 
             if (!account.isAdmin) throw new ForbiddenException("У вас нет прав администратора");
 
@@ -64,9 +62,7 @@ namespace CampusCourses.Services
 
         public async Task<CampusGroupModel> editCampusGroup(Guid id, CreateCampusGroupModel createCampusGroupModel, Guid userId)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
+            var account = await _helperService.checkAutorize(userId);
 
             if (!account.isAdmin) throw new ForbiddenException("У вас нет прав администратора");
 
@@ -89,10 +85,7 @@ namespace CampusCourses.Services
 
         public async Task<List<CampusCoursePreviewModel>> getCampusGroups(Guid id, Guid userId)
         {
-            var account = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (account == null) throw new UnauthorizedException("Пользователь не авторизован");
-
+            var account = await _helperService.checkAutorize(userId);
             var group = await _dbContext.Groups.Include(group => group.Courses).FirstOrDefaultAsync(gr => gr.Id == id);
 
             if (group == null) throw new NotFoundException("Группы не существует");

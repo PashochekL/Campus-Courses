@@ -25,6 +25,26 @@ namespace CampusCourses.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Course>()
+                .Property(course => course.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Course>()
+                .Property(course => course.Semester)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Student>()
+                .Property(student => student.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Student>()
+                .Property(student => student.MidtermResult)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Student>()
+                .Property(student => student.FinalResult)
+                .HasConversion<string>();
+
             modelBuilder.Entity<Account>().HasData(_dataService.CreateAccounts());
 
             modelBuilder.Entity<Course>()

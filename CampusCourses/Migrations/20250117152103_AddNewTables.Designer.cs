@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampusCourses.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250112164444_AddNewConnectionsAndKeys")]
-    partial class AddNewConnectionsAndKeys
+    [Migration("20250117152103_AddNewTables")]
+    partial class AddNewTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,36 +65,36 @@ namespace CampusCourses.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7a0a46d9-e6a2-4371-8ebe-33bb738c234a"),
+                            Id = new Guid("7de04a8a-44d4-4c2b-9856-995c619f365a"),
                             BirthDate = new DateTime(2000, 10, 20, 16, 35, 29, 390, DateTimeKind.Utc),
                             CreatedDate = new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc),
                             Email = "danilaTrampManovich@mail.ru",
                             FullName = "Данила Трампович",
-                            Password = "AK7FhAF9WOeLpPRuE1cCo3P2qTN/h9y9z/Pyr/WNtzTHeQSw5US/U/KzjvafvTzjBg==",
+                            Password = "AKGgK+6ZTrz8uLwrFSnyDhA4A7lDm4jUsN5U97keO5YA0et2VmBPU2lBOWOw1iBxRQ==",
                             isAdmin = true,
                             isStudent = false,
                             isTeacher = true
                         },
                         new
                         {
-                            Id = new Guid("1478faf1-0a82-419b-8e2b-576af005daaf"),
+                            Id = new Guid("add2cc48-ecca-40e3-9b0a-516ecf02cf3e"),
                             BirthDate = new DateTime(2005, 6, 16, 16, 35, 29, 390, DateTimeKind.Utc),
                             CreatedDate = new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc),
                             Email = "kostyaShvebs@mail.ru",
                             FullName = "Костя Швепсов",
-                            Password = "AL86+TTypVyJaC3kxIWpwm3K1ZuBQDv3jun06I0WESeet61lFeDDo+MJEvrZio9aJg==",
+                            Password = "AOloWULxDASwatmP9Y01zTgXVHJDyYnCnT3v0ZcLgINHF78aAL2UGlqb9gIS+BxpOA==",
                             isAdmin = true,
                             isStudent = false,
                             isTeacher = false
                         },
                         new
                         {
-                            Id = new Guid("fd59e7a7-3b31-4b2b-9128-f01088b129e6"),
+                            Id = new Guid("3249ca6b-688d-4e5e-bfb7-4b8885396f08"),
                             BirthDate = new DateTime(1995, 2, 12, 16, 35, 29, 390, DateTimeKind.Utc),
                             CreatedDate = new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc),
                             Email = "sanyaSigmaBoy@mail.ru",
                             FullName = "Саша Сигма Бойчик",
-                            Password = "ANmG636PxHOat8Y3M3FpZd8Z0Ao1H0QcR301YnvpJP6dgW2ozxFhQ0rB9xp2gbxvvA==",
+                            Password = "AHRhZF08wTcPVA+pHsOxLHewWbKpzyqFBn6a2H2lDTB4S0KgVYZdL4JM7tkGproXOw==",
                             isAdmin = true,
                             isStudent = true,
                             isTeacher = false
@@ -168,6 +168,32 @@ namespace CampusCourses.Migrations
                     b.ToTable("Groups");
                 });
 
+            modelBuilder.Entity("CampusCourses.Data.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsImportant")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("CampusCourses.Data.Entities.Student", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -176,10 +202,10 @@ namespace CampusCourses.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("FinalResult")
+                    b.Property<int?>("FinalResult")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MidtermResult")
+                    b.Property<int?>("MidtermResult")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -219,6 +245,17 @@ namespace CampusCourses.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("CampusCourses.Data.Entities.Notification", b =>
+                {
+                    b.HasOne("CampusCourses.Data.Entities.Course", "Course")
+                        .WithMany("Notifications")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("CampusCourses.Data.Entities.Student", b =>
@@ -268,6 +305,8 @@ namespace CampusCourses.Migrations
 
             modelBuilder.Entity("CampusCourses.Data.Entities.Course", b =>
                 {
+                    b.Navigation("Notifications");
+
                     b.Navigation("Students");
 
                     b.Navigation("Teachers");

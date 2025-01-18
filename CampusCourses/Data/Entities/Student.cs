@@ -10,7 +10,7 @@ namespace CampusCourses.Data.Entities
         public Guid CourseId { get; set; }
         public Course Course { get; set; }
         public StudentStatuses Status { get; set; }
-        public StudentMarks MidtermResult { get; set; }
-        public StudentMarks FinalResult { get; set; }
+        public StudentMarks? MidtermResult { get; set; }
+        public StudentMarks? FinalResult { get; set; }
     }
 }

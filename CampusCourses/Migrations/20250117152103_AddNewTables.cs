@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CampusCourses.Migrations
 {
     /// <inheritdoc />
-    public partial class AddNewTable : Migration
+    public partial class AddNewTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,22 +29,42 @@ namespace CampusCourses.Migrations
                 keyValue: new Guid("f355e7fa-634d-4ac4-bd33-035f3de6b392"));
 
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false),
+                    IsImportant = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Students",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccountId = table.Column<Guid>(type: "uuid", nullable: false),
                     CourseId = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    MidtermResult = table.Column<int>(type: "integer", nullable: false),
-                    FinalResult = table.Column<int>(type: "integer", nullable: false)
+                    MidtermResult = table.Column<int>(type: "integer", nullable: true),
+                    FinalResult = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Students", x => x.UserId);
+                    table.PrimaryKey("PK_Students", x => new { x.UserId, x.CourseId });
                     table.ForeignKey(
-                        name: "FK_Students_Accounts_AccountId",
-                        column: x => x.AccountId,
+                        name: "FK_Students_Accounts_UserId",
+                        column: x => x.UserId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -61,16 +81,15 @@ namespace CampusCourses.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccountId = table.Column<Guid>(type: "uuid", nullable: false),
                     CourseId = table.Column<Guid>(type: "uuid", nullable: false),
                     mainTeacher = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teachers", x => x.UserId);
+                    table.PrimaryKey("PK_Teachers", x => new { x.UserId, x.CourseId });
                     table.ForeignKey(
-                        name: "FK_Teachers_Accounts_AccountId",
-                        column: x => x.AccountId,
+                        name: "FK_Teachers_Accounts_UserId",
+                        column: x => x.UserId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -87,25 +106,26 @@ namespace CampusCourses.Migrations
                 columns: new[] { "Id", "BirthDate", "CreatedDate", "Email", "FullName", "Password", "isAdmin", "isStudent", "isTeacher" },
                 values: new object[,]
                 {
-                    { new Guid("3450f58e-75b8-4996-a545-f44fe2f657c8"), new DateTime(2005, 6, 16, 16, 35, 29, 390, DateTimeKind.Utc), new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc), "kostyaShvebs@mail.ru", "Костя Швепсов", "AOaacj9/KriUB4OBf8wCm9uzUfEQKzGKy0VY7KyowC2UN11WIeErb8o6+BfXOtH29w==", true, false, false },
-                    { new Guid("38525892-8e28-4215-84f2-11c4735872ee"), new DateTime(2000, 10, 20, 16, 35, 29, 390, DateTimeKind.Utc), new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc), "danilaTrampManovich@mail.ru", "Данила Трампович", "AM52gYNd68Vu45htiO3EZt3LpoVeTQWHME2YWw0iTahtAK1GW21xYvaqpyrOWGAnMg==", true, false, true },
-                    { new Guid("5262b1b6-b742-4131-8315-878c98e85463"), new DateTime(1995, 2, 12, 16, 35, 29, 390, DateTimeKind.Utc), new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc), "sanyaSigmaBoy@mail.ru", "Саша Сигма Бойчик", "AIFanxb4tJgidseuVB512YL8jRVN4lJkr0bTIdL8rUNtFRLFPmZCHdUli2mYbeiX8Q==", true, true, false }
+                    { new Guid("3249ca6b-688d-4e5e-bfb7-4b8885396f08"), new DateTime(1995, 2, 12, 16, 35, 29, 390, DateTimeKind.Utc), new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc), "sanyaSigmaBoy@mail.ru", "Саша Сигма Бойчик", "AHRhZF08wTcPVA+pHsOxLHewWbKpzyqFBn6a2H2lDTB4S0KgVYZdL4JM7tkGproXOw==", true, true, false },
+                    { new Guid("7de04a8a-44d4-4c2b-9856-995c619f365a"), new DateTime(2000, 10, 20, 16, 35, 29, 390, DateTimeKind.Utc), new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc), "danilaTrampManovich@mail.ru", "Данила Трампович", "AKGgK+6ZTrz8uLwrFSnyDhA4A7lDm4jUsN5U97keO5YA0et2VmBPU2lBOWOw1iBxRQ==", true, false, true },
+                    { new Guid("add2cc48-ecca-40e3-9b0a-516ecf02cf3e"), new DateTime(2005, 6, 16, 16, 35, 29, 390, DateTimeKind.Utc), new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc), "kostyaShvebs@mail.ru", "Костя Швепсов", "AOloWULxDASwatmP9Y01zTgXVHJDyYnCnT3v0ZcLgINHF78aAL2UGlqb9gIS+BxpOA==", true, false, false }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Students_AccountId",
-                table: "Students",
-                column: "AccountId");
+                name: "IX_Courses_Id",
+                table: "Courses",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_CourseId",
+                table: "Notifications",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_CourseId",
                 table: "Students",
                 column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Teachers_AccountId",
-                table: "Teachers",
-                column: "AccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Teachers_CourseId",
@@ -117,25 +137,32 @@ namespace CampusCourses.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
                 name: "Students");
 
             migrationBuilder.DropTable(
                 name: "Teachers");
 
-            migrationBuilder.DeleteData(
-                table: "Accounts",
-                keyColumn: "Id",
-                keyValue: new Guid("3450f58e-75b8-4996-a545-f44fe2f657c8"));
+            migrationBuilder.DropIndex(
+                name: "IX_Courses_Id",
+                table: "Courses");
 
             migrationBuilder.DeleteData(
                 table: "Accounts",
                 keyColumn: "Id",
-                keyValue: new Guid("38525892-8e28-4215-84f2-11c4735872ee"));
+                keyValue: new Guid("3249ca6b-688d-4e5e-bfb7-4b8885396f08"));
 
             migrationBuilder.DeleteData(
                 table: "Accounts",
                 keyColumn: "Id",
-                keyValue: new Guid("5262b1b6-b742-4131-8315-878c98e85463"));
+                keyValue: new Guid("7de04a8a-44d4-4c2b-9856-995c619f365a"));
+
+            migrationBuilder.DeleteData(
+                table: "Accounts",
+                keyColumn: "Id",
+                keyValue: new Guid("add2cc48-ecca-40e3-9b0a-516ecf02cf3e"));
 
             migrationBuilder.InsertData(
                 table: "Accounts",

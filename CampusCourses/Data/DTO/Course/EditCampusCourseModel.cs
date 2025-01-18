@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CampusCourses.Data.DTO.Course
 {
-    public class CreateCampusCourseModel
+    public class EditCampusCourseModel
     {
         [Required(ErrorMessage = "Поле name обязательно")]
         [StringLength(100), MinLength(1)]

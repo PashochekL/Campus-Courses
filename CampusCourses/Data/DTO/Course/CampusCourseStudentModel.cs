@@ -8,7 +8,7 @@ namespace CampusCourses.Data.DTO.Course
         public string name { get; set; }
         public string email { get; set; }
         public StudentStatuses status { get; set; }
-        public StudentMarks midtermResult { get; set; }
-        public StudentMarks finalResult { get; set; }
+        public StudentMarks? midtermResult { get; set; }
+        public StudentMarks? finalResult { get; set; }
     }
 }

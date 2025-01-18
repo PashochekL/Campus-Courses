@@ -62,36 +62,36 @@ namespace CampusCourses.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("45cdf059-bb1e-42d4-8255-24f69e5f8521"),
+                            Id = new Guid("ccb86753-c68a-4d6b-8d54-5ba88bb11c32"),
                             BirthDate = new DateTime(2000, 10, 20, 16, 35, 29, 390, DateTimeKind.Utc),
                             CreatedDate = new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc),
                             Email = "danilaTrampManovich@mail.ru",
                             FullName = "Данила Трампович",
-                            Password = "AGVqi97oEJ+xhsXOReOe45zjwP/PMso1gqu46oUtA6pBsFkuly7YxyjDOPJMEbFXuw==",
+                            Password = "AEm6BWx/Zj5FFdABmpCYZ4QiQn7C6eFva6N1caw6GdeoILrfRuGeDw4R/6WXJc+C7w==",
                             isAdmin = true,
                             isStudent = false,
                             isTeacher = true
                         },
                         new
                         {
-                            Id = new Guid("10a3c264-29a0-40b2-afe6-5e399a55da94"),
+                            Id = new Guid("5f7092e7-d14d-46d3-b32e-26426bd2a7d0"),
                             BirthDate = new DateTime(2005, 6, 16, 16, 35, 29, 390, DateTimeKind.Utc),
                             CreatedDate = new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc),
                             Email = "kostyaShvebs@mail.ru",
                             FullName = "Костя Швепсов",
-                            Password = "AIgnQZeYe8+d8Rx+uzp5o0kfOR2AnJDpqOzkUygJcKq2U28RNO3udtxaRFzbyqgxQw==",
+                            Password = "AAX+Yj6Ag2obyHpZ17JRt/TyP8SuuXZmbIYaZ0SoOL7iWN/CAtF56mYTqbaXcRdbCA==",
                             isAdmin = true,
                             isStudent = false,
                             isTeacher = false
                         },
                         new
                         {
-                            Id = new Guid("257b5bc3-6989-4c18-942a-32987c9a1af5"),
+                            Id = new Guid("4ca284de-8734-4833-b65d-7454236a0130"),
                             BirthDate = new DateTime(1995, 2, 12, 16, 35, 29, 390, DateTimeKind.Utc),
                             CreatedDate = new DateTime(2025, 1, 11, 20, 56, 6, 390, DateTimeKind.Utc),
                             Email = "sanyaSigmaBoy@mail.ru",
                             FullName = "Саша Сигма Бойчик",
-                            Password = "AAE58GMnMjfjeQbVPvnuBG12NbRmdttYQwQPoleDSBUcDHc2UCvEESeDZM0Eo33jpg==",
+                            Password = "AF6GtHkfBi7UhDUi19VFHKIqXZwtWFP4J4eCvAa+K7fR6PLdEum+z3xaXEnMmnxkNA==",
                             isAdmin = true,
                             isStudent = true,
                             isTeacher = false
@@ -128,14 +128,16 @@ namespace CampusCourses.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Semester")
-                        .HasColumnType("integer");
+                    b.Property<string>("Semester")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("StartYear")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -199,14 +201,15 @@ namespace CampusCourses.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("FinalResult")
-                        .HasColumnType("integer");
+                    b.Property<string>("FinalResult")
+                        .HasColumnType("text");
 
-                    b.Property<int>("MidtermResult")
-                        .HasColumnType("integer");
+                    b.Property<string>("MidtermResult")
+                        .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "CourseId");
 

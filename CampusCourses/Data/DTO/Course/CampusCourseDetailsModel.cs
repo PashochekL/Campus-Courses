@@ -10,7 +10,7 @@ namespace CampusCourses.Data.DTO.Course
         public int startYear { get; set; }
         public int maximumStudentsCount { get; set; }
         public int studentsEnrolledCount { get; set; }
-        public int studentsInQueueCount { get; set; }
+        public int? studentsInQueueCount { get; set; }
         public string requirements { get; set; }
         public string annotations { get; set; }
         public CourseStatuse status { get; set; }
