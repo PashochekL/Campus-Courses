@@ -16,6 +16,7 @@ namespace CampusCourses.Services.IServices
         public Task<CampusCoursePreviewModel> createNewCourse(Guid groupId, CreateCampusCourseModel createCampusCourseModel, Guid userId);
         public Task<CampusCourseDetailsModel> editAnnotations(Guid courseId, EditCampusCourseRequirementsAndAnnotationsModel editModel, Guid userId);
         public Task<CampusCourseDetailsModel> editCourse(Guid courseId, EditCampusCourseModel editModel, Guid userId);
+        public Task deleteCourse(Guid courseId, Guid userId);
         public Task<CampusCourseDetailsModel> addTeacher(Guid courseId, AddTeacherToCourseModel addTeacherToCourseModel, Guid userId);
         public Task<List<CampusCoursePreviewModel>> getMyCourse(Guid userId);
         public Task<List<CampusCoursePreviewModel>> getCourseTeaching(Guid userId);

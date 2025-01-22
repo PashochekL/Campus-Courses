@@ -43,11 +43,14 @@ namespace CampusCourses.Services
         {
             var account = await _helperService.checkAutorize(userId);
 
+            var checkTeacher = await _dbContext.Teachers.AnyAsync(t => t.UserId == userId);
+            var checkStudent = await _dbContext.Students.AnyAsync(t => t.UserId == userId);
+
             var roles = new UserRolesModel
             {
                 isAdmin = account.isAdmin,
-                isStudent = account.isStudent,
-                isTeacher = account.isTeacher
+                isStudent = checkStudent,
+                isTeacher = checkTeacher
             };
             return roles;
         }

@@ -71,6 +71,24 @@ namespace CampusCourses.Controllers
             throw new UnauthorizedException("Пользователь не авторизован");
         }
 
+        [HttpDelete("/groups/{id}")]
+        [Authorize]
+        public async Task<IActionResult> deleteCampusGroup(Guid id)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim != null)
+            {
+                if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    await _service.deleteGroup(id, userId);
+
+                    return Ok();
+                }
+            }
+            throw new UnauthorizedException("Пользователь не авторизован");
+        }
+
         [HttpGet("/groups/{id}")]
         [Authorize]
         public async Task<ActionResult<CampusCoursePreviewModel>> getListCampusGroups(Guid id)

@@ -1,4 +1,5 @@
 using CampusCourses.Data;
+using CampusCourses.Email;
 using CampusCourses.Services;
 using CampusCourses.Services.Exceptions;
 using CampusCourses.Services.IServices;
@@ -9,6 +10,8 @@ using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
+using Quartz;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,10 +25,33 @@ builder.Services.AddCors(options =>
     });
 });
 
+var emailConfig = builder.Configuration
+    .GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+    q.AddJob<EmailJob>(opts =>
+        opts.WithIdentity("EmailJob")
+            .StoreDurably()
+    );
+    q.AddTrigger(opts => opts
+        .ForJob("EmailJob")
+        .WithIdentity("EmailsTrigger")
+        .StartNow()
+        .WithSimpleSchedule(x => x
+            .WithIntervalInSeconds(20)
+            .RepeatForever())
+    );
+});
+
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new ValidateModel());
 });
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 builder.Logging.AddConsole();
 
@@ -42,6 +68,9 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IGroupService, GroupService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<StartDataService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

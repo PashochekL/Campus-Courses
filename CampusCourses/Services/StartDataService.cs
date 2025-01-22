@@ -19,7 +19,7 @@ namespace CampusCourses.Services
 
             accounts.AddRange(new[]
             {
-                new Account // Админ и учитель
+                new Account // Админ
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Данила Трампович",
@@ -27,9 +27,7 @@ namespace CampusCourses.Services
                     BirthDate = DateTime.Parse("2000-10-20T16:35:29.390Z").ToUniversalTime(),
                     CreatedDate = DateTime.Parse("2025-01-11T20:56:06.390Z").ToUniversalTime(),
                     Email = "danilaTrampManovich@mail.ru",
-                    isTeacher = true,
                     isAdmin = true,
-                    isStudent = false
                 },
                 new Account // Админ
                 {
@@ -39,11 +37,9 @@ namespace CampusCourses.Services
                     BirthDate = DateTime.Parse("2005-06-16T16:35:29.390Z").ToUniversalTime(),
                     CreatedDate = DateTime.Parse("2025-01-11T20:56:06.390Z").ToUniversalTime(),
                     Email = "kostyaShvebs@mail.ru",
-                    isTeacher = false,
                     isAdmin = true,
-                    isStudent = false
                 },
-                new Account // Админ и студент
+                new Account // Админ
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Саша Сигма Бойчик",
@@ -51,9 +47,7 @@ namespace CampusCourses.Services
                     BirthDate = DateTime.Parse("1995-02-12T16:35:29.390Z").ToUniversalTime(),
                     CreatedDate = DateTime.Parse("2025-01-11T20:56:06.390Z").ToUniversalTime(),
                     Email = "sanyaSigmaBoy@mail.ru",
-                    isTeacher = false,
                     isAdmin = true,
-                    isStudent = true
                 }
             });
             return accounts;

@@ -145,12 +145,8 @@ namespace CampusCourses.Services
             if (EditModel.status == StudentStatuses.Accepted)
             {
                 course.RemainingSlotsCount -= 1;
-                account.isStudent = true;
-
                 _dbContext.Courses.Update(course);
-                _dbContext.Accounts.Update(account);
             }
-
             await _dbContext.SaveChangesAsync();
 
             var courseInf = await _helperService.createCampusDetailsModel(courseId, account);
@@ -199,13 +195,11 @@ namespace CampusCourses.Services
                 student.MidtermResult = editCourseStudentMarkModel.mark;
                 _dbContext.Entry(student).Property(s => s.MidtermResult).IsModified = true;
             }    
-
             else
             {
                 student.FinalResult = editCourseStudentMarkModel.mark;
                 _dbContext.Entry(student).Property(s => s.FinalResult).IsModified = true;
             }
-
             await _dbContext.SaveChangesAsync();
 
             var courseInf = await _helperService.createCampusDetailsModel(courseId, account);
@@ -255,12 +249,6 @@ namespace CampusCourses.Services
                 CourseId = newCourse.Id,
             };
             _dbContext.Teachers.Add(newTeacher);
-
-            if (teacherAcc.TeachingCourses.Count == 1)
-            {
-                teacherAcc.isTeacher = true;
-                _dbContext.Update(teacherAcc);
-            }
             await _dbContext.SaveChangesAsync();
 
             CampusCoursePreviewModel campusCoursePreviewModel = new CampusCoursePreviewModel()
@@ -274,56 +262,6 @@ namespace CampusCourses.Services
                 status = newCourse.Status,
             };
             return campusCoursePreviewModel;
-        }
-
-        public async Task<CampusCourseDetailsModel> addTeacher(Guid courseId, AddTeacherToCourseModel addTeacherToCourseModel, Guid adminId)
-        {
-            var accountAdmin = await _helperService.checkAutorize(adminId);
-            var course = await _helperService.checkAvailabilityCourse(courseId);
-
-            if (!Guid.TryParse(addTeacherToCourseModel.userId.ToString(), out Guid userId))
-                throw new BadRequestException("Неверный формат id пользователя");
-
-            var userAccount = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
-
-            if (userAccount == null) throw new NotFoundException("Пользователь не найден");
-
-            var checkRules = await _dbContext.Teachers.Where(s => s.CourseId == courseId).FirstOrDefaultAsync(acc => acc.UserId == adminId);
-
-            if (checkRules != null && !(accountAdmin.isAdmin == true || checkRules.mainTeacher == true))
-            {
-                throw new ForbiddenException("У вас недостаточно прав");
-            }
-
-            var student = await _dbContext.Students.Where(s => s.CourseId == courseId).FirstOrDefaultAsync(acc => acc.UserId == userId);
-
-            if (student != null)
-            {
-                throw new BadRequestException("Студент курса не может быть назначен его преподавателем");
-            }
-
-            var teacher = await _dbContext.Teachers.Where(s => s.CourseId == courseId).FirstOrDefaultAsync(acc => acc.UserId == userId);
-
-            if (userAccount.isTeacher && teacher != null)
-            {
-                throw new BadRequestException("Пользователь уже является преподавателем этого курса");
-            }
-
-            var newTeacher = new Teacher()
-            {
-                UserId = userAccount.Id,
-                CourseId = courseId,
-            };
-            _dbContext.Teachers.Add(newTeacher);
-
-            userAccount.isTeacher = true;
-            _dbContext.Accounts.Update(userAccount);
-
-            await _dbContext.SaveChangesAsync();
-
-            var courseInf = await _helperService.createCampusDetailsModel(courseId, accountAdmin);
-
-            return courseInf;
         }
 
         public async Task<CampusCourseDetailsModel> editAnnotations(Guid courseId, EditCampusCourseRequirementsAndAnnotationsModel editModel, Guid userId)
@@ -371,7 +309,9 @@ namespace CampusCourses.Services
                 .ThenInclude(c => c.Account)
                 .FirstOrDefaultAsync();
 
-            if (course.Students.Where(s => s.Status == StudentStatuses.Accepted).ToList().Count > editModel.maximumStudentsCount)
+            if (course == null) throw new NotFoundException("Курс не найден");
+
+            if (course.Students.Count(s => s.Status == StudentStatuses.Accepted) > editModel.maximumStudentsCount)
             {
                 throw new BadRequestException("Значение maximumStudentsCount не может быть меньше количества студентов, принятых на курс");
             }
@@ -379,23 +319,22 @@ namespace CampusCourses.Services
             var mainTeacher = course.Teachers.FirstOrDefault(t => t.mainTeacher == true);
             var mainTeacherAccount = mainTeacher?.Account;
 
-            if (mainTeacher.UserId != teacherAcc.Id)
+            if (mainTeacher != null && mainTeacher.UserId != teacherAcc.Id)
             {
-                var checkTeacher = course.Teachers.FirstOrDefault(t => t.UserId == teacherAcc.Id);
+                if (mainTeacher.mainTeacher)
+                {
+                    mainTeacher.mainTeacher = false;
+                    _dbContext.Teachers.Update(mainTeacher);
+                }
 
-                if (teacherAcc.isTeacher && checkTeacher != null)
+                var checkTeacher = course.Teachers.FirstOrDefault(t => t.UserId == teacherAcc.Id);
+                if (checkTeacher != null)
                 {
                     checkTeacher.mainTeacher = true;
-                    mainTeacher.mainTeacher = false;
-
                     _dbContext.Teachers.Update(checkTeacher);
-                    _dbContext.Teachers.Update(mainTeacher);
                 }
                 else
                 {
-                    mainTeacher.mainTeacher = false;
-                    teacherAcc.isTeacher = true;
-
                     var newTeacher = new Teacher()
                     {
                         UserId = teacherAcc.Id,
@@ -403,7 +342,6 @@ namespace CampusCourses.Services
                         mainTeacher = true
                     };
                     _dbContext.Teachers.Add(newTeacher);
-                    _dbContext.Accounts.Update(teacherAcc);
                 }
             }
 
@@ -419,6 +357,60 @@ namespace CampusCourses.Services
             await _dbContext.SaveChangesAsync();
 
             var courseInf = await _helperService.createCampusDetailsModel(courseId, account);
+
+            return courseInf;
+        }
+
+        public async Task deleteCourse(Guid courseId, Guid userId)
+        {
+            var account = await _helperService.checkAutorize(userId);
+            var course = await _helperService.checkAvailabilityCourse(courseId);
+
+            if (!account.isAdmin) throw new ForbiddenException("У вас нет прав администратора");
+
+            _dbContext.Courses.Remove(course);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<CampusCourseDetailsModel> addTeacher(Guid courseId, AddTeacherToCourseModel addTeacherToCourseModel, Guid adminId)
+        {
+            var accountAdmin = await _helperService.checkAutorize(adminId);
+            var course = await _helperService.checkAvailabilityCourse(courseId);
+
+            if (!Guid.TryParse(addTeacherToCourseModel.userId.ToString(), out Guid userId))
+                throw new BadRequestException("Неверный формат id пользователя");
+
+            var userAccount = await _dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Id == userId);
+
+            if (userAccount == null) throw new NotFoundException("Пользователь не найден");
+
+            var checkRules = await _dbContext.Teachers.Where(s => s.CourseId == courseId).FirstOrDefaultAsync(acc => acc.UserId == adminId);
+
+            if (checkRules != null && !(accountAdmin.isAdmin == true || checkRules.mainTeacher == true))
+            {
+                throw new ForbiddenException("У вас недостаточно прав");
+            }
+
+            var student = await _dbContext.Students.Where(s => s.CourseId == courseId).FirstOrDefaultAsync(acc => acc.UserId == userId);
+
+            if (student != null)
+            {
+                throw new BadRequestException("Студент курса не может быть назначен его преподавателем");
+            }
+
+            var teacher = await _dbContext.Teachers.Where(s => s.CourseId == courseId).FirstOrDefaultAsync(acc => acc.UserId == userId);
+
+            if (teacher != null) throw new BadRequestException("Пользователь уже является преподавателем этого курса");
+
+            var newTeacher = new Teacher()
+            {
+                UserId = userAccount.Id,
+                CourseId = courseId,
+            };
+            _dbContext.Teachers.Add(newTeacher);
+            await _dbContext.SaveChangesAsync();
+
+            var courseInf = await _helperService.createCampusDetailsModel(courseId, accountAdmin);
 
             return courseInf;
         }

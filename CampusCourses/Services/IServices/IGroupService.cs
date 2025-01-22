@@ -9,6 +9,7 @@ namespace CampusCourses.Services.IServices
         public Task<CampusGroupModel> createGroup(CreateCampusGroupModel createCampusGroupModel, Guid userId);
         public Task<List<CampusGroupModel>> getListAllGroups(Guid userId);
         public Task<CampusGroupModel> editCampusGroup(Guid id, CreateCampusGroupModel createCampusGroupModel, Guid userId);
+        public Task deleteGroup(Guid groupId, Guid userId);
         public Task<List<CampusCoursePreviewModel>> getCampusGroups(Guid id, Guid userId);
     }
 }

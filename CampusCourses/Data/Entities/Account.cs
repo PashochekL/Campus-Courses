@@ -10,9 +10,7 @@ namespace CampusCourses.Data.Entities
         public string Password { get; set; }
         public DateTime BirthDate { get; set; }
         public string Email { get; set; }
-        public bool isTeacher { get; set; }
         public bool isAdmin { get; set; }
-        public bool isStudent { get; set; }
         public DateTime CreatedDate { get; set; }
 
         public ICollection<Student> MyCourses { get; set; } = new List<Student>();

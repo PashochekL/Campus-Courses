@@ -99,7 +99,7 @@ namespace CampusCourses.Services
 
             foreach (var student in students)
             {
-                if (account.isStudent && student.id == account.Id && !account.isAdmin)
+                if (student.id == account.Id && !account.isAdmin)
                 {
                     if (student.midtermResult == null) student.midtermResult = StudentMarks.NotDefined;
 
@@ -132,7 +132,7 @@ namespace CampusCourses.Services
                 Notifications = notifications
             };
 
-            if ((!account.isAdmin || !account.isTeacher) && course.Teachers.Where(t => t.CourseId == courseId).FirstOrDefault(t => t.UserId == account.Id) == null)
+            if (!account.isAdmin && course.Teachers.Where(t => t.CourseId == courseId).FirstOrDefault(t => t.UserId == account.Id) == null)
             {
                 courseInf.studentsInQueueCount = null;
             }

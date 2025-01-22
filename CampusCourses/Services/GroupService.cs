@@ -2,6 +2,7 @@
 using CampusCourses.Data.DTO.Course;
 using CampusCourses.Data.DTO.Group;
 using CampusCourses.Data.Entities;
+using CampusCourses.Data.Entities.Enums;
 using CampusCourses.Services.Exceptions;
 using CampusCourses.Services.IServices;
 using Microsoft.EntityFrameworkCore;
@@ -31,10 +32,6 @@ namespace CampusCourses.Services
                     name = group.Name
                 }).ToListAsync();
 
-            /*if (!groups.Any())
-            {
-                throw new Exception("Список групп пуст");
-            }*/
             return groups;
         }
 
@@ -83,12 +80,25 @@ namespace CampusCourses.Services
             return campusGroupModel;
         }
 
+        public async Task deleteGroup(Guid groupId, Guid userId)
+        {
+            var account = await _helperService.checkAutorize(userId);
+            var group = await _dbContext.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
+
+            if (group == null) throw new NotFoundException("Такой группы не существует");
+
+            if (!account.isAdmin) throw new ForbiddenException("У вас нет прав администратора");
+
+            _dbContext.Groups.Remove(group);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<List<CampusCoursePreviewModel>> getCampusGroups(Guid id, Guid userId)
         {
             var account = await _helperService.checkAutorize(userId);
             var group = await _dbContext.Groups.Include(group => group.Courses).FirstOrDefaultAsync(gr => gr.Id == id);
 
-            if (group == null) throw new NotFoundException("Группы не существует");
+            if (group == null) throw new NotFoundException("Такой группы не существует");
 
             var courses = group.Courses.OrderBy(c => c.Name).Select(course => new CampusCoursePreviewModel()
             {

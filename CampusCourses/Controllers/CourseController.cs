@@ -180,6 +180,24 @@ namespace CampusCourses.Controllers
             throw new UnauthorizedException("Пользователь не авторизован");
         }
 
+        [HttpDelete("/courses/{id}")]
+        [Authorize]
+        public async Task<IActionResult> deleteCampusCourse(Guid id)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim != null)
+            {
+                if (Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    await _service.deleteCourse(id, userId);
+
+                    return Ok();
+                }
+            }
+            throw new UnauthorizedException("Пользователь не авторизован");
+        }
+
         [HttpPost("/course/{id}/teachers")]
         [Authorize]
         public async Task<IActionResult> addCampusTeacher(Guid id, [FromBody] AddTeacherToCourseModel addTeacherToCourseModel)

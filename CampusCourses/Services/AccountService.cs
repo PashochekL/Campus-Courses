@@ -63,8 +63,6 @@ namespace CampusCourses.Services
                 BirthDate = userRegisterModel.birthDate.ToUniversalTime(),
                 Email = userRegisterModel.email,
                 isAdmin = false,
-                isStudent = false,
-                isTeacher = false,
                 CreatedDate = DateTime.UtcNow
             };
             _dbContext.Add(newAccount);
