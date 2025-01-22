@@ -4,6 +4,7 @@ using CampusCourses.Services.Exceptions;
 using CampusCourses.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CampusCourses.Data.Entities;
 
 namespace CampusCourses.Controllers
 {
@@ -18,6 +19,10 @@ namespace CampusCourses.Controllers
 
         [HttpGet("/users")]
         [Authorize]
+        [ProducesResponseType(typeof(List<UserShortModel>), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<ActionResult<UserShortModel>> getListUser()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -36,6 +41,9 @@ namespace CampusCourses.Controllers
 
         [HttpGet("/roles")]
         [Authorize]
+        [ProducesResponseType(typeof(UserRolesModel), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> getRoles()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");

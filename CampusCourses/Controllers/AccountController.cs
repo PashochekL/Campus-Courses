@@ -3,6 +3,7 @@ using CampusCourses.Services.Exceptions;
 using CampusCourses.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CampusCourses.Data.Entities;
 using System;
 
 namespace CampusCourses.Controllers
@@ -17,6 +18,9 @@ namespace CampusCourses.Controllers
         }
 
         [HttpPost("/registration")]
+        [ProducesResponseType(typeof(TokenResponse), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> registerNewUser([FromBody] UserRegisterModel userRegisterModel)
         {
             string tokenAutorize = await _service.registerUser(userRegisterModel);
@@ -25,6 +29,9 @@ namespace CampusCourses.Controllers
         }
 
         [HttpPost("/login")]
+        [ProducesResponseType(typeof(TokenResponse), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> autorizeUser([FromBody] UserLoginModel userLoginModel)
         {
             string tokenAutorize = await _service.autorizeUser(userLoginModel);
@@ -34,6 +41,9 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/logout")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> logoutUser()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -50,19 +60,20 @@ namespace CampusCourses.Controllers
                     return Ok(new { Message = "Выход выполнен успешно" });
                 }
             }
-
             throw new UnauthorizedException("Пользователь не авторизован");
         }
 
         [HttpGet("/profile")]
         [Authorize]
+        [ProducesResponseType(typeof(UserProfileModel), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<ActionResult<UserProfileModel>> getProfile()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
 
             if (userIdClaim != null)
             {
-
                 if (Guid.TryParse(userIdClaim.Value, out Guid userId))
                 {
                     UserProfileModel userModelDTO = await _service.getUserProfile(userId);
@@ -75,6 +86,10 @@ namespace CampusCourses.Controllers
 
         [HttpPut("/profile")]
         [Authorize]
+        [ProducesResponseType(typeof(UserProfileModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<ActionResult<UserProfileModel>> eitUserProfile([FromBody] EditUserProfileModel editUserProfileModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");

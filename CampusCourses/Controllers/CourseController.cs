@@ -6,6 +6,7 @@ using CampusCourses.Services.Exceptions;
 using CampusCourses.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CampusCourses.Data.Entities;
 
 namespace CampusCourses.Controllers
 {
@@ -20,6 +21,10 @@ namespace CampusCourses.Controllers
 
         [HttpGet("/courses/{id}/details")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> getCampusCourseDetails(Guid id)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -38,6 +43,10 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/courses/{id}/sign-up")]
         [Authorize]
+        [ProducesResponseType(typeof(StudentViewModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> signUpCourse(Guid id)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -56,6 +65,12 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/courses/{id}/status")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> editStatus(Guid id, EditCourseStatusModel editCourseStatusModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -74,6 +89,12 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/courses/{id}/student-status/{studentId}")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> editStatusSignedStudent(Guid id, Guid studentId, [FromBody] EditCourseStudentStatusModel EditCourseStudentStatusModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -92,6 +113,12 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/courses/{id}/notifications")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> createCampusNotification(Guid id, [FromBody] AddCampusCourseNotificationModel createNotification)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -110,7 +137,13 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/courses/{id}/marks/{studentId}")]
         [Authorize]
-        public async Task<IActionResult> editStidentMark(Guid id, Guid studentId, [FromBody] EditCourseStudentMarkModel editCourseStudentMarkModel)
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
+        public async Task<IActionResult> editStudentMark(Guid id, Guid studentId, [FromBody] EditCourseStudentMarkModel editCourseStudentMarkModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
 
@@ -128,7 +161,13 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/groups/{groupId}")]
         [Authorize]
-        public async Task<IActionResult> createCampusGroup(Guid groupId, [FromBody] CreateCampusCourseModel createCampusCourseModel)
+        [ProducesResponseType(typeof(CampusCoursePreviewModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
+        public async Task<IActionResult> createCampusCourse(Guid groupId, [FromBody] CreateCampusCourseModel createCampusCourseModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
 
@@ -146,6 +185,12 @@ namespace CampusCourses.Controllers
 
         [HttpPut("/courses/{id}/requirements-and-annotations")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> editCourseRequirementsAndAnnotations(Guid id, [FromBody] EditCampusCourseRequirementsAndAnnotationsModel editModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -164,6 +209,12 @@ namespace CampusCourses.Controllers
 
         [HttpPut("/courses/{id}")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> editCampusCourse(Guid id, [FromBody] EditCampusCourseModel editModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -182,6 +233,12 @@ namespace CampusCourses.Controllers
 
         [HttpDelete("/courses/{id}")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> deleteCampusCourse(Guid id)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -200,6 +257,12 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/course/{id}/teachers")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusCourseDetailsModel), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> addCampusTeacher(Guid id, [FromBody] AddTeacherToCourseModel addTeacherToCourseModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -218,7 +281,10 @@ namespace CampusCourses.Controllers
 
         [HttpGet("/courses/my")]
         [Authorize]
-        public async Task<IActionResult> getCampusCourseMy()
+        [ProducesResponseType(typeof(List<CampusCoursePreviewModel>), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
+        public async Task<IActionResult> getMyCampusCourse()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
 
@@ -236,6 +302,9 @@ namespace CampusCourses.Controllers
 
         [HttpGet("/courses/teaching")]
         [Authorize]
+        [ProducesResponseType(typeof(List<CampusCoursePreviewModel>), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> getCampusCourseTeaching()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -253,6 +322,8 @@ namespace CampusCourses.Controllers
         }
 
         [HttpGet("/courses/list")]
+        [ProducesResponseType(typeof(List<CampusCoursePreviewModel>), 200)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<ActionResult<CampusCoursePreviewModel>> getCampusCourseList([FromQuery] Sort? sort = null, string? search = null, bool? hasPlacesAndOpen = null,
             [FromQuery] Semester? semester = null, int page = 1, int size = 10)
         {

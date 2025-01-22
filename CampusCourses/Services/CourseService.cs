@@ -473,9 +473,16 @@ namespace CampusCourses.Services
                 courseQuery = courseQuery.Where(course => course.Semester == semester.Value);
             }
 
-            if (hasPlacesAndOpen.HasValue && hasPlacesAndOpen.Value)
+            if (hasPlacesAndOpen.HasValue)
             {
-                courseQuery = courseQuery.Where(course => course.RemainingSlotsCount > 0 && course.Status == CourseStatuse.Started);
+                if (hasPlacesAndOpen.Value)
+                {
+                    courseQuery = courseQuery.Where(course => course.RemainingSlotsCount > 0 && course.Status == CourseStatuse.OpenForAssigning);
+                }
+                else
+                {
+                    courseQuery = courseQuery.Where(course => course.RemainingSlotsCount == 0 || course.Status != CourseStatuse.OpenForAssigning);
+                }
             }
 
             if (sort.HasValue)

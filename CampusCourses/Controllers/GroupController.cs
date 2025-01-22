@@ -5,6 +5,8 @@ using CampusCourses.Services.Exceptions;
 using CampusCourses.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CampusCourses.Data.Entities;
+using CampusCourses.Data.DTO.User;
 
 namespace CampusCourses.Controllers
 {
@@ -19,6 +21,9 @@ namespace CampusCourses.Controllers
 
         [HttpGet("/groups")]
         [Authorize]
+        [ProducesResponseType(typeof(List<CampusGroupModel>), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<ActionResult<CampusGroupModel>> getListCampusGroups()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -37,6 +42,10 @@ namespace CampusCourses.Controllers
 
         [HttpPost("/groups")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusGroupModel), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> createCampusGroup([FromBody] CreateCampusGroupModel createCampusGroupModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -55,6 +64,11 @@ namespace CampusCourses.Controllers
 
         [HttpPut("/groups/{id}")]
         [Authorize]
+        [ProducesResponseType(typeof(CampusGroupModel), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> editNameCampusGroup(Guid id, [FromBody] CreateCampusGroupModel createCampusGroupModel)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -73,6 +87,11 @@ namespace CampusCourses.Controllers
 
         [HttpDelete("/groups/{id}")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<IActionResult> deleteCampusGroup(Guid id)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
@@ -91,6 +110,11 @@ namespace CampusCourses.Controllers
 
         [HttpGet("/groups/{id}")]
         [Authorize]
+        [ProducesResponseType(typeof(List<CampusCoursePreviewModel>), 200)]
+        [ProducesResponseType(typeof(Error), 401)]
+        [ProducesResponseType(typeof(Error), 403)]
+        [ProducesResponseType(typeof(Error), 404)]
+        [ProducesResponseType(typeof(Error), 500)]
         public async Task<ActionResult<CampusCoursePreviewModel>> getListCampusGroups(Guid id)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
