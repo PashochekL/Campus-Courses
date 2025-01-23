@@ -47,7 +47,7 @@ namespace CampusCourses.Controllers
         public async Task<IActionResult> logoutUser()
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userId");
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault(); 
 
             if (userIdClaim != null && authHeader != null && authHeader.StartsWith("Bearer "))
             {

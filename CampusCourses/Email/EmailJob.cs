@@ -24,7 +24,6 @@ namespace CampusCourses.Email
                 Console.WriteLine("Нет студентов для отправки уведомлений.");
                 return;
             }
-
             Console.WriteLine($"Отправка писем началась. Всего студентов: {studentData.Count}");
 
             var groupedByCourse = studentData
@@ -36,28 +35,33 @@ namespace CampusCourses.Email
                 var courseName = course.Key;
                 var emails = course.Value;
 
-                var message = new Message(
-                    emails,
-                    "Внимание! Ваш курс начнется завтра.",
-                    $"Здравствуйте! Напоминаем, что ваш курс '{courseName}' начнется завтра. Не забудьте!"
-                );
+                var subGroups = emails
+                    .Select((email, index) => new { email, index })
+                    .GroupBy(x => x.index / subGroupSize)
+                    .Select(group => group.Select(x => x.email).ToList())
+                    .ToList();
 
-                try
+                foreach (var subGroup in subGroups)
                 {
-                    await _emailSender.SendMessage(message);
-                    Console.WriteLine($"Уведомления для курса '{courseName}' отправлены ({emails.Count} студентов).");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Ошибка при отправке писем для курса '{courseName}': {ex.Message}");
-                }
+                    var message = new Message(
+                        subGroup,
+                        "Внимание! Ваш курс начнется завтра.",
+                        $"Здравствуйте! Напоминаем, что ваш курс '{courseName}' начнется завтра. Не забудьте!"
+                    );
 
-                await Task.Delay(delayBetweenBatchesMs);
+                    try
+                    {
+                        await _emailSender.SendMessage(message);
+                        Console.WriteLine($"Уведомления для подгруппы курса '{courseName}' отправлены ({subGroup.Count} студентов).");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Ошибка при отправке писем для курса '{courseName}': {ex.Message}");
+                    }
+                    await Task.Delay(delayBetweenBatchesMs);
+                }
             }
-
-
             Console.WriteLine("Все письма успешно отправлены.");
         }
     }
-
 }
