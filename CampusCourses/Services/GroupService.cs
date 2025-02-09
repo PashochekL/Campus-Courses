@@ -102,8 +102,8 @@ namespace CampusCourses.Services
 
             var courses = group.Courses.OrderBy(c => c.Name).Select(course => new CampusCoursePreviewModel()
             {
-                id = group.Id,
-                name = group.Name,
+                id = course.Id,
+                name = course.Name,
                 semester = course.Semester,
                 startYear = course.StartYear,
                 maximumStudentsCount = course.MaximumStudentsCount,
